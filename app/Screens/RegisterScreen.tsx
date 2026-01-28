@@ -11,7 +11,8 @@ import {
 } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import { ScreenType } from '../types';
-import { database, ref, set } from '../firebaseConfig';
+// TODO: Uncomment when implementing Firebase
+// import { database, ref, set } from '../firebaseConfig';
 
 interface RegisterScreenProps {
   onRegister: () => void;
@@ -91,7 +92,9 @@ const RegisterScreen: React.FC<RegisterScreenProps> = ({ onRegister, onNavigate 
     setLoading(true);
 
     try {
-      // Generate a unique ID for the user (you can use Firebase's push key or a custom ID)
+      // TODO: Uncomment when implementing Firebase
+      /*
+      // Generate a unique ID for the user
       const userId = `user_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
       
       // Create user data object
@@ -100,19 +103,19 @@ const RegisterScreen: React.FC<RegisterScreenProps> = ({ onRegister, onNavigate 
         fullName: formData.fullName.trim(),
         email: formData.email.trim().toLowerCase(),
         phone: formData.phone.trim(),
-        password: formData.password, // In production, you should hash this!
+        password: formData.password,
         createdAt: new Date().toISOString(),
         lastLogin: null,
         accounts: {
           checking: {
             accountNumber: `CHK${Math.floor(10000000 + Math.random() * 90000000)}`,
-            balance: 1000.00, // Initial balance for new users
+            balance: 1000.00,
             currency: 'USD',
             createdAt: new Date().toISOString(),
           },
           savings: {
             accountNumber: `SAV${Math.floor(10000000 + Math.random() * 90000000)}`,
-            balance: 500.00, // Initial savings balance
+            balance: 500.00,
             currency: 'USD',
             createdAt: new Date().toISOString(),
           }
@@ -130,29 +133,36 @@ const RegisterScreen: React.FC<RegisterScreenProps> = ({ onRegister, onNavigate 
         userId: userId,
         fullName: formData.fullName.trim(),
       });
+      */
 
-      Alert.alert(
-        'Success!',
-        'Account created successfully! Please login with your credentials.',
-        [
-          {
-            text: 'OK',
-            onPress: () => {
-              // Reset form
-              setFormData({
-                fullName: '',
-                email: '',
-                phone: '',
-                password: '',
-                confirmPassword: '',
-                agreeTerms: false,
-              });
-              // Navigate to login
-              onNavigate('login');
+      // TEMPORARY: Mock registration for demo purposes
+      setTimeout(() => {
+        setLoading(false);
+        Alert.alert(
+          'Demo Mode',
+          'Account created successfully! (Demo mode)\n\nPlease login with your credentials.',
+          [
+            {
+              text: 'OK',
+              onPress: () => {
+                // Reset form
+                setFormData({
+                  fullName: '',
+                  email: '',
+                  phone: '',
+                  password: '',
+                  confirmPassword: '',
+                  agreeTerms: false,
+                });
+                // Navigate to login
+                onNavigate('login');
+                // Call onRegister if needed
+                onRegister();
+              }
             }
-          }
-        ]
-      );
+          ]
+        );
+      }, 1500);
 
     } catch (error: any) {
       console.error('Registration error:', error);
@@ -160,7 +170,6 @@ const RegisterScreen: React.FC<RegisterScreenProps> = ({ onRegister, onNavigate 
         'Registration Failed',
         error.message || 'An error occurred during registration. Please try again.'
       );
-    } finally {
       setLoading(false);
     }
   };
@@ -274,7 +283,14 @@ const RegisterScreen: React.FC<RegisterScreenProps> = ({ onRegister, onNavigate 
 
             {loading && (
               <Text style={styles.loadingText}>
-                Creating your account and setting up your banking profile...
+                Creating your account and setting up your banking profile... (Demo mode)
+              </Text>
+            )}
+            
+            {/* Demo note */}
+            {!loading && (
+              <Text style={styles.demoNote}>
+                Note: This is a demo. No real account will be created.
               </Text>
             )}
           </View>
@@ -282,7 +298,7 @@ const RegisterScreen: React.FC<RegisterScreenProps> = ({ onRegister, onNavigate 
           <View style={styles.authFooter}>
             <Text style={styles.footerText}>
               Already have an account?{' '}
-              <Text style={styles.link} onPress={() => !loading && onNavigate('login')}>
+              <Text style={[styles.link, loading && styles.disabled]} onPress={() => !loading && onNavigate('login')}>
                 Login here
               </Text>
             </Text>
@@ -292,7 +308,6 @@ const RegisterScreen: React.FC<RegisterScreenProps> = ({ onRegister, onNavigate 
     </ScrollView>
   );
 };
-
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
